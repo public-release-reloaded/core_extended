@@ -41,11 +41,22 @@ val nth : t -> int -> string option
 (** [nth_conv] is like [nth_conv_exn], but returns [None] if there is an error. *)
 val nth_conv : t -> int -> (string -> 'a) -> 'a option
 
-(** [to_list t] return all columns in the order they appear in the file *)
+(** [to_list t] returns all columns in the order they appear in the file *)
 val to_list : t -> string list
 
-(** [to_array t] return all columns in the order they appear in the file *)
+(** [to_array t] returns a copy of all columns in the order they appear in the file *)
 val to_array : t -> string array
+
+(** [unsafe_to_array__promise_no_mutation t] returns all columns in the order they appear
+    in the file.
+
+    Alias for [Iarray.unsafe_to_array__promise_no_mutation (to_array t)].
+
+    Mutating the returned array will mutate the underlying row. *)
+val unsafe_to_array__promise_no_mutation : t -> string array
+
+(** [to_iarray t] return all columns in the order they appear in the file *)
+val to_iarray : t -> string iarray
 
 (** [length t] returns number of fields in this row *)
 val length : t -> int
@@ -78,8 +89,8 @@ val fold_opt
   -> 'acc
 
 val iter : t -> f:(header:string -> data:string -> unit) -> unit
-val create : int String.Table.t -> string array -> t
-val create' : int String.Map.t -> string array -> t
+val create : int String.Table.t -> string iarray -> t
+val create' : int String.Map.t -> string iarray -> t
 val equal : t -> t -> bool
 val compare : t -> t -> int
 
