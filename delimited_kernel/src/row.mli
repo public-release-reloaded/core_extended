@@ -1,6 +1,6 @@
 open Core
 
-type t
+type t : value mod contended non_float portable
 
 (** [get_conv_exn t header [%here] conv] extract the cell with column [header] from [row]
     and convert it using [conv]. If there is an error the error is raised including [row]
@@ -41,11 +41,22 @@ val nth : t -> int -> string option
 (** [nth_conv] is like [nth_conv_exn], but returns [None] if there is an error. *)
 val nth_conv : t -> int -> (string -> 'a) -> 'a option
 
-(** [to_list t] return all columns in the order they appear in the file *)
+(** [to_list t] returns all columns in the order they appear in the file *)
 val to_list : t -> string list
 
-(** [to_array t] return all columns in the order they appear in the file *)
+(** [to_array t] returns a copy of all columns in the order they appear in the file *)
 val to_array : t -> string array
+
+(** [unsafe_to_array__promise_no_mutation t] returns all columns in the order they appear
+    in the file.
+
+    Alias for [Iarray.unsafe_to_array__promise_no_mutation (to_array t)].
+
+    Mutating the returned array will mutate the underlying row. *)
+val unsafe_to_array__promise_no_mutation : t -> string array
+
+(** [to_iarray t] return all columns in the order they appear in the file *)
+val to_iarray : t -> string iarray
 
 (** [length t] returns number of fields in this row *)
 val length : t -> int
@@ -68,18 +79,22 @@ val sexp_of_t : t -> Sexp.t
 
     It may throw if header doesn't have a corresponding entry in data array, e.g. when row
     has fewer columns than headers. *)
-val fold : t -> init:'acc -> f:('acc -> header:string -> data:string -> 'acc) -> 'acc
+val fold
+  :  t
+  -> init:'acc
+  -> f:('acc -> header:string -> data:string -> 'acc) @ local
+  -> 'acc
 
 (** [fold_opt] just like [fold] but lets user handle missing data. *)
 val fold_opt
   :  t
   -> init:'acc
-  -> f:('acc -> header:string -> data:string option -> 'acc)
+  -> f:('acc -> header:string -> data:string option -> 'acc) @ local
   -> 'acc
 
-val iter : t -> f:(header:string -> data:string -> unit) -> unit
-val create : int String.Table.t -> string array -> t
-val create' : int String.Map.t -> string array -> t
+val iter : t -> f:(header:string -> data:string -> unit) @ local -> unit
+val create : int String.Table.t -> string iarray -> t
+val create' : int String.Map.t -> string iarray -> t
 val equal : t -> t -> bool
 val compare : t -> t -> int
 
