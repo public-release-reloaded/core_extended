@@ -12,15 +12,15 @@ build: [
 ]
 depends: [
   "ocaml" {>= "5.5.0"}
-  "bin_prot"
-  "core"
-  "core_unix"
-  "ppx_jane"
-  "ppx_stable_witness"
-  "record_builder"
-  "sexplib"
-  "dune"               {>= "3.17.0"}
-  "re"                 {>= "1.8.0"}
+  "bin_prot" {>= "v0.18~" & < "v0.19~"}
+  "core" {>= "v0.18~" & < "v0.19~"}
+  "core_unix" {>= "v0.18~" & < "v0.19~"}
+  "ppx_jane" {>= "v0.18~" & < "v0.19~"}
+  "ppx_stable_witness" {>= "v0.18~" & < "v0.19~"}
+  "record_builder" {>= "v0.18~" & < "v0.19~"}
+  "sexplib" {>= "v0.18~" & < "v0.19~"}
+  "dune" {>= "3.17.0"}
+  "re" {>= "1.8.0"}
 ]
 available: arch != "x86_32"
 synopsis: "Extra components that are not as closely vetted or as stable as Core"
